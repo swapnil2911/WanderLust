@@ -44,7 +44,7 @@ export const googlesignin = async (req, res) => {
 
 export const signup = async (req, res) => {
   const secret = req.secret;
-  const { email, password, firstName, lastName } = req.body;
+  const { imageUrl, email, password, firstName, lastName } = req.body;
   try {
     const oldUser = await UserModal.findOne({ email });
 
@@ -52,7 +52,7 @@ export const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const result = await UserModal.create({ email, password: hashedPassword, name: `${firstName} ${lastName}` });
+    const result = await UserModal.create({ email, password: hashedPassword, name: `${firstName} ${lastName}`, imageUrl: imageUrl });
 
     const token = jwt.sign( { email: result.email, id: result._id }, secret, { expiresIn: "3h" } );
 

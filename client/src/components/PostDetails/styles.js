@@ -6,7 +6,21 @@ export default makeStyles((theme) => ({
     objectFit: 'cover',
     width: '100%',
     maxHeight: '600px',
-
+    backgroundBlendMode: 'darken !important',
+  },
+  chip: {
+    color: 'white',
+    backgroundColor: 'red',
+    borderRadius: '0.5rem',
+    marginBottom: '0.5rem',
+    fontFamily: "'Sen', sans-serif",
+    '&:hover': {
+      color: 'red !important',
+      backgroundColor: 'white !important',  
+      borderRadius: '0.5rem !important',
+      marginBottom: '0.5rem !important',
+      fontFamily: "'Sen', sans-serif !important",
+    },
   },
   card: {
     display: 'flex',
@@ -23,6 +37,7 @@ export default makeStyles((theme) => ({
   },
   imageSection: {
     marginLeft: '20px',
+    width: '50%',
     [theme.breakpoints.down('sm')]: {
       marginLeft: 0,
     },

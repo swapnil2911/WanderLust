@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState,useEffect } from 'react';
+import { useDispatch,useSelector } from 'react-redux';
 import { Avatar, Button, Paper, Grid, Typography, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,TextField } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
@@ -16,6 +16,7 @@ import Input from './Input';
 const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
 
 const SignUp = () => {
+  const { alert } = useSelector((state) => state.posts);
   const [form, setForm, formRef] = useStateRef(initialState);
   const [isSignup, setIsSignup] = useState(false);
   const [open, setOpen] = useState(false);
@@ -28,6 +29,10 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const handleShowPassword = () => setShowPassword(!showPassword);
 
+  useEffect(() => {
+    notify(alert?.message);
+  },[alert,dispatch]);
+
   const handleChangePassword = (e) =>{
     setModalPassword(e.target.value);
     handleChange(e);
@@ -36,7 +41,6 @@ const SignUp = () => {
     setModalConfirmPassword(e.target.value);
     handleChange(e);
   } 
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -76,7 +80,7 @@ const SignUp = () => {
 
   const googleSuccess = async (res) => {
     const result = res?.profileObj;
-    const googleState = { firstName: result.givenName, lastName: result.familyName, email: result.email, password: "testing", confirmPassword: "testing" };
+    const googleState = { firstName: result.givenName, lastName: result.familyName, email: result.email,imageUrl:result?.imageUrl, password: "testing", confirmPassword: "testing" };
       setForm({ ...googleState});
     try {
         if(isSignup)
@@ -168,7 +172,7 @@ const SignUp = () => {
             clientId="985067557537-vivi04qvnq06tpvojuu0rmtlkapo5jm5.apps.googleusercontent.com"
             render={(renderProps) => (
               <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained">
-                Google Sign In
+                { isSignup ? 'Google Sign Up' : 'Google Sign In' }
               </Button>
             )}
             onSuccess={googleSuccess}

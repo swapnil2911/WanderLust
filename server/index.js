@@ -7,7 +7,9 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import postRoutes from './routes/posts.js';
-import userRouter from "./routes/user.js";
+import userRoutes from "./routes/user.js";
+import profileRoutes from "./routes/profile.js";
+import accountRoutes from "./routes/account.js";
 
 const app = express();
 
@@ -19,10 +21,21 @@ app.use('/posts', function (req, res, next) {
   req.secret = SECRET;
   next();
 }, postRoutes);
+
+app.use('/profile', function (req, res, next) {
+  req.secret = SECRET;
+  next();
+}, profileRoutes);
+
 app.use("/user", function (req, res, next) {
   req.secret = SECRET;
   next();
-}, userRouter);
+}, userRoutes);
+
+app.use("/account", function (req, res, next) {
+  req.secret = SECRET;
+  next();
+}, accountRoutes);
 
 const PORT = process.env.PORT|| 5000;
 

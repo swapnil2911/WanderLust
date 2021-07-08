@@ -1,5 +1,6 @@
 export const CREATE = 'CREATE';
 export const UPDATE = 'UPDATE';
+export const UPDATE_USER = 'UPDATE_USER';
 export const DELETE = 'DELETE';
 export const FETCH_ALL = 'FETCH_ALL';
 export const FETCH_BY_SEARCH = 'FETCH_BY_SEARCH';
@@ -8,6 +9,8 @@ export const LIKE = 'LIKE';
 export const END_LOADING = 'END_LOADING';
 export const START_LOADING = 'START_LOADING';
 export const COMMENT = 'COMMENT';
-
+export const FETCH_POST_BY_USER = 'FETCH_POST_BY_USER';
 export const AUTH = 'AUTH';
 export const LOGOUT = 'LOGOUT';
+export const FETCH_USER_BY_ID = 'FETCH_USER_BY_ID';
+export const ERROR = 'ERROR';

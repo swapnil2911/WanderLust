@@ -25,8 +25,6 @@ const Home = () => {
   const history = useHistory();
 
   const searchPost = () => {
-    console.log(search);
-    console.log(tags.length);
     if (search.trim() || tags.length > 0) {
       dispatch(getPostsBySearch({ search, tags: tags.join(',') }));
       history.push(`/posts/search?searchQuery=${search || 'none'}&tags=${tags.join(',')}`);

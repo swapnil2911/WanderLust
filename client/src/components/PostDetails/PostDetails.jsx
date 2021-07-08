@@ -1,18 +1,29 @@
 import React, { useEffect } from 'react';
-import { Paper, Typography, CircularProgress, Divider,Avatar,Chip,Box } from '@material-ui/core/';
+import cx from 'clsx';
+import { Paper, Typography, CircularProgress, Divider, Avatar, Chip, Box, Card, CardMedia, CardContent } from '@material-ui/core/';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { useParams, useHistory } from 'react-router-dom';
 
-import { getPost, getPostsBySearch } from '../../actions/posts';
-import useStyles from './styles';
+import { getPost, getPostsBySearch, getUserByID } from '../../actions/posts';
+import useClasses from './styles';
+import useStyles from './cardStyles';
 import CommentSection from './CommentSection';
+import TextInfoContent from '@mui-treasury/components/content/textInfo';
+import { useBlogTextInfoContentStyles } from '@mui-treasury/styles/textInfoContent/blog';
+import { useOverShadowStyles } from '@mui-treasury/styles/shadow/over';
 
 const Post = () => {
-  const { post, posts, isLoading } = useSelector((state) => state.posts);
+  const { creator, post, posts, isLoading } = useSelector((state) => state.posts);
   const dispatch = useDispatch();
   const history = useHistory();
-  const classes = useStyles();
+  const classes = useClasses();
+  const styles = useStyles();
+  const {
+    button: buttonStyles,
+    ...contentStyles
+  } = useBlogTextInfoContentStyles();
+  const shadowStyles = useOverShadowStyles();
   const { id } = useParams();
 
   useEffect(() => {
@@ -22,6 +33,7 @@ const Post = () => {
   useEffect(() => {
     if (post) {
       dispatch(getPostsBySearch({ search: 'none', tags: post?.tags.join(',') }));
+      dispatch(getUserByID(post.creator));
     }
   }, [post]);
 
@@ -42,45 +54,52 @@ const Post = () => {
     );
   }
 
-  const recommendedPosts = posts.filter(({ _id }) => _id !== post._id);
+  const recommendedPostsTemp = posts.filter(({ _id }) => _id !== post._id);
+  const recommendedPosts = recommendedPostsTemp.length > 2 ? recommendedPostsTemp.slice(0,3) : recommendedPostsTemp;
 
   return (
     <Paper style={{ padding: '20px', borderRadius: '15px' }} elevation={6}>
       <div className={classes.card}>
-        <div className={classes.section}>
+        <div className={classes.imageSection}  >
+          <img className={classes.media} src={post.selectedFile || 'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'} alt={post.title} />
+        </div>
+        <div className={classes.section} >
           <Typography variant="h3" component="h2">{post.title}</Typography>
+          <Typography variant="body1">{moment(post.createdAt).format("dddd, MMMM Do YYYY")}</Typography>
           <Box display = "flex" flexDirection="row">
           {post.tags.map((tag) =>
             <Box p={1} >
-              <Chip variant="outlined" label={tag} color="secondary" onClick={(e) => searchByTag({tag})} avatar={<Avatar>#</Avatar>} />
+            <Chip variant="outlined" className={classes.chip} label={tag} onClick={(e) => searchByTag({tag})}  />
               <span>&nbsp;</span>
             </Box>
           )}
           </Box>
           <Typography gutterBottom variant="body1" component="p">{post.message}</Typography>
-          <Typography variant="h6">Created by: {post.name}</Typography>
-          <Typography variant="body1">{moment(post.createdAt).fromNow()}</Typography>
           <Divider style={{ margin: '20px 0' }} />
           <CommentSection post={post} />
-          <Divider style={{ margin: '20px 0' }} />
-        </div>
-        <div className={classes.imageSection}>
-          <img className={classes.media} src={post.selectedFile || 'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'} alt={post.title} />
         </div>
       </div>
+      <Divider style={{ margin: '20px 0' }} />
+      <Avatar className={classes.purple} alt={creator?.data?.name} src={creator?.data?.imageUrl}>{creator?.data?.name?.charAt(0)}</Avatar>
+      <Typography variant="h6">Created by: {creator?.data?.name}</Typography>
+      <Divider style={{ margin: '20px 0' }} />
       {!!recommendedPosts.length && (
         <div className={classes.section}>
           <Typography gutterBottom variant="h5">You might also like:</Typography>
-          <Divider />
+          <Divider style={{ margin: '20px 0' }} />
           <div className={classes.recommendedPosts}>
-            {recommendedPosts.map(({ title, name, message, likes, selectedFile, _id }) => (
-              <div style={{ margin: '20px', cursor: 'pointer' }} onClick={() => openPost(_id)} key={_id}>
-                <Typography gutterBottom variant="h6">{title}</Typography>
-                <Typography gutterBottom variant="subtitle2">{name}</Typography>
-                <Typography gutterBottom variant="subtitle2">{message}</Typography>
-                <Typography gutterBottom variant="subtitle1">Likes: {likes.length}</Typography>
-                <img src={selectedFile} width="200px" />
-              </div>
+            {recommendedPosts.map(({ title, message ,createdAt , selectedFile, _id }) => (
+              <Card className={cx(styles.root, shadowStyles.root)}  xs = { 12 } lg = { 6 } style={{ cursor: 'pointer' }} onClick={() => openPost(_id)} key={_id} >
+                <CardMedia  className={styles.media}  image={ selectedFile }  />
+                <CardContent>
+                  <TextInfoContent
+                    classes={contentStyles}
+                    overline={moment(createdAt).format("dddd, MMMM Do YYYY")}
+                    heading={title}
+                    body={ message.split(' ').splice(0, 20).join(' ') }
+                  />
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>

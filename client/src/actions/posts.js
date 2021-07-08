@@ -1,4 +1,4 @@
-import { START_LOADING, END_LOADING, FETCH_ALL, FETCH_POST, FETCH_BY_SEARCH, CREATE, UPDATE, DELETE, LIKE, COMMENT } from '../constants/actionTypes';	
+import { START_LOADING, END_LOADING, FETCH_ALL, FETCH_POST, FETCH_BY_SEARCH, FETCH_POST_BY_USER, CREATE, UPDATE,UPDATE_USER, DELETE, LIKE, COMMENT, FETCH_USER_BY_ID } from '../constants/actionTypes';	
 import * as api from '../api/index.js';
 
 export const getPost = (id) => async (dispatch) => {	
@@ -6,6 +6,27 @@ export const getPost = (id) => async (dispatch) => {
     dispatch({ type: START_LOADING });	
     const { data } = await api.fetchPost(id);	
     dispatch({ type: FETCH_POST, payload: { post: data } });	
+    dispatch({ type: END_LOADING });
+  } catch (error) {	
+    console.log(error);	
+  }	
+};
+
+export const getUserByID = (id) => async (dispatch) => {
+  try {
+    const { data } = await api.getUserByID(id);
+    dispatch({ type: FETCH_USER_BY_ID, payload: { creator: data } });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getPostByUser = (id) => async (dispatch) => {	
+  try {	
+    dispatch({ type: START_LOADING });	
+    const { data: { data } } = await api.fetchPostByUser(id);	
+    dispatch({ type: FETCH_POST_BY_USER, payload: { data } });	
+    dispatch({ type: END_LOADING });
   } catch (error) {	
     console.log(error);	
   }	
@@ -60,7 +81,17 @@ export const updatePost = (id, post) => async (dispatch) => {
   try {
     const { data } = await api.updatePost(id, post);
 
-    dispatch({ type: UPDATE, payload: data });
+    dispatch({ type: UPDATE, payload: {...data,name: post?.name } });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateUser = (id, user) => async (dispatch) => {
+  try {
+    const { data } = await api.updatePost(id, user);
+
+    dispatch({ type: UPDATE_USER, data: data });
   } catch (error) {
     console.log(error);
   }
